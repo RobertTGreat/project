@@ -1,4 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
+import Link from 'next/link';
+import { User } from '@supabase/supabase-js';
 import {
   Home,
   Heart,
@@ -6,35 +10,36 @@ import {
   ChevronDown,
   ChevronRight,
   RefreshCw,
-  Palette, // Changed from FiEdit3 for Colour Convertor
+  Palette,
   Clock,
   Database,
-  LogIn // Import LogIn icon
-} from 'lucide-react'; // Changed from react-icons/fi
+  LogIn,
+  LogOut, // Keep if needed, but LogoutButton handles icon
+  UserCircle2, // Import default user icon
+  Wrench, // Add an icon for Tools
+} from 'lucide-react';
+import LogoutButton from './auth/logout-button';
+import { Button } from '@/components/ui/button'; // Keep if styling logout button directly
 
 interface SidebarProps {
-  // Props can be added later if needed, e.g., user info
+  user: User | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = () => {
-  const [calculatorsOpen, setCalculatorsOpen] = useState(true); // Default open based on mockup
+const Sidebar: React.FC<SidebarProps> = ({ user }) => {
+  const [calculatorsOpen, setCalculatorsOpen] = useState(true);
   const [compressorsOpen, setCompressorsOpen] = useState(false);
   const [formattersOpen, setFormattersOpen] = useState(false);
   const [apiToolsOpen, setApiToolsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add logged in state
 
-  // Placeholder user data
-  const userName = "RobertTGreat";
-  const userAvatarUrl = "https://placekitten.com/32/32"; // Placeholder avatar
-
+  // --- Style Definitions ---
   const sidebarStyle: React.CSSProperties = {
-    backgroundColor: 'rgba(30, 30, 30, 0.25)', // Increased transparency (lower alpha)
-    backdropFilter: 'blur(20px)', // Increased blur
-    WebkitBackdropFilter: 'blur(20px)', // Increased blur (Safari)
-    borderRight: '1px solid rgba(255, 255, 255, 0.1)', // Subtle border on the right
+    backgroundColor: 'rgba(30, 30, 30, 0.25)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    borderRight: '1px solid rgba(255, 255, 255, 0.1)',
     color: '#e0e0e0',
     width: '300px',
-    height: '100vh', // Full height
+    height: '100vh',
     display: 'flex',
     flexDirection: 'column',
     padding: '20px 10px',
@@ -69,6 +74,8 @@ const Sidebar: React.FC<SidebarProps> = () => {
     cursor: 'pointer',
     marginBottom: '5px',
     transition: 'background-color 0.2s ease',
+    color: '#e0e0e0',
+    textDecoration: 'none',
   };
 
   const navItemHoverStyle: React.CSSProperties = {
@@ -77,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = () => {
 
   const iconStyle: React.CSSProperties = {
     marginRight: '15px',
-    fontSize: '20px', // Adjust icon size as needed
+    fontSize: '20px',
   };
 
   const dropdownHeaderStyle: React.CSSProperties = {
@@ -86,70 +93,104 @@ const Sidebar: React.FC<SidebarProps> = () => {
   };
 
   const dropdownContentStyle: React.CSSProperties = {
-    paddingLeft: '10px', // Remove left padding to align with category title
-    maxHeight: calculatorsOpen ? '500px' : '0', // Basic animation
+    paddingLeft: '10px',
+    maxHeight: calculatorsOpen ? '500px' : '0',
     overflow: 'hidden',
     transition: 'max-height 0.3s ease-out',
   };
 
-    const subItemStyle: React.CSSProperties = {
-      ...navItemStyle,
-      justifyContent: 'space-between', // For the heart icon
-      fontSize: '15px',
-      paddingTop: '8px',
-      paddingBottom: '8px',
-    };
-
-  const userProfileStyle: React.CSSProperties = {
-    marginTop: 'auto', // Pushes to the bottom
-    paddingTop: '15px',
-    borderTop: '1px solid #444',
-    display: 'flex',
-    alignItems: 'center',
-    paddingLeft: '10px',
-    minHeight: '50px', // Ensure consistent height
+  const subItemStyle: React.CSSProperties = {
+    ...navItemStyle,
+    justifyContent: 'space-between',
+    fontSize: '15px',
+    paddingTop: '8px',
+    paddingBottom: '8px',
   };
 
+  // Style for the Sign In button when user is logged out
   const signInButtonStyle: React.CSSProperties = {
-    ...navItemStyle, // Reuse some nav item styles
+    ...navItemStyle,
     width: '100%',
     justifyContent: 'center',
-    backgroundColor: '#4a4a4a', // Example background
+    backgroundColor: '#4a4a4a',
     color: '#ffffff',
-    marginBottom: 0, // Override margin from navItemStyle
+    marginBottom: 0,
+    textDecoration: 'none',
   };
 
-  const avatarStyle: React.CSSProperties = {
-      width: '32px',
-      height: '32px',
-      borderRadius: '50%',
-      marginLeft: '10px',
+  // Styles for the User Profile Section at the bottom when logged in
+  const userProfileSectionStyle: React.CSSProperties = {
+    marginTop: 'auto',
+    paddingTop: '15px',
+    borderTop: '1px solid #444',
+    paddingLeft: '10px',
+    paddingRight: '10px',
+    paddingBottom: '10px',
   };
 
-  // Basic hover effect handling (can be improved with CSS classes)
-  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+  const userProfileContentStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px', // Space between avatar, name, and button
+  };
+
+  const userLinkStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    flexGrow: 1,
+    textDecoration: 'none',
+    minWidth: 0, // Prevent text overflow issues
+    color: 'inherit',
+    padding: '8px 12px',
+    borderRadius: '6px',
+    transition: 'background-color 0.2s ease',
+    cursor: 'pointer',
+  };
+
+  const userHoverStyle: React.CSSProperties = {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  };
+
+  const userNameStyle: React.CSSProperties = {
+    flexGrow: 1, // Allow name to take space
+    fontSize: '15px',
+    color: 'inherit', // Inherit color from link
+    fontWeight: '500',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  };
+
+  // --- Hover Handlers ---
+  // Apply hover style to user link area as well
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement | HTMLAnchorElement>) => {
       e.currentTarget.style.backgroundColor = navItemHoverStyle.backgroundColor || '';
   };
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-      e.currentTarget.style.backgroundColor = ''; // Revert to transparent
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement | HTMLAnchorElement>) => {
+      e.currentTarget.style.backgroundColor = '';
   };
 
 
+  // --- Component Return ---
   return (
     <div style={sidebarStyle}>
+      {/* --- Top Section (Title, Main Links, Dropdowns) --- */}
       <div style={titleStyle}>DEVTOOLS</div>
 
       <div style={categoryTitleStyle}>Main</div>
-      <div style={navItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <Link href="/" style={navItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <Home style={iconStyle} /> Home
-      </div>
-      <div style={navItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      </Link>
+      {/* Assuming Favourites and News pages exist */}
+      <Link href="/favourites" style={navItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <Heart style={iconStyle} /> Favourites
-      </div>
-      <div style={navItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      </Link>
+      <Link href="/news" style={navItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <FileText style={iconStyle} /> News
-      </div>
+      </Link>
 
+      {/* --- Dropdown Sections --- */}
       {/* Calculators Dropdown */}
       <div style={categoryTitleStyle} onClick={() => setCalculatorsOpen(!calculatorsOpen)} >
           <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -158,79 +199,80 @@ const Sidebar: React.FC<SidebarProps> = () => {
           </div>
       </div>
       <div style={{ ...dropdownContentStyle, maxHeight: calculatorsOpen ? '500px' : '0' }}>
-        <div style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <RefreshCw style={{...iconStyle, fontSize: '18px'}} />
-            <span>Unit Convertor</span>
-          </div>
-          <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
-        </div>
-        <div style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Palette style={{...iconStyle, fontSize: '18px'}} />
-            <span>Colour Convertor</span>
-          </div>
-          <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
-        </div>
-        <div style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Clock style={{...iconStyle, fontSize: '18px'}} />
-            <span>Time Calculator</span>
-          </div>
-          <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
-        </div>
-        <div style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Database style={{...iconStyle, fontSize: '18px'}} />
-            <span>Data Calculator</span>
-          </div>
-          <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
-        </div>
+        {/* Assuming these calculator pages exist */}
+        <Link href="/calculators/unit-converter" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+           <div style={{ display: 'flex', alignItems: 'center' }}><RefreshCw style={{...iconStyle, fontSize: '18px'}} /><span>Unit Convertor</span></div>
+           <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
+         </Link>
+         <Link href="/calculators/color-converter" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+             <div style={{ display: 'flex', alignItems: 'center' }}><Palette style={{...iconStyle, fontSize: '18px'}} /><span>Colour Convertor</span></div>
+             <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
+         </Link>
+         <Link href="/calculators/time-calculator" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+             <div style={{ display: 'flex', alignItems: 'center' }}><Clock style={{...iconStyle, fontSize: '18px'}} /><span>Time Calculator</span></div>
+             <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
+         </Link>
+         <Link href="/calculators/data-calculator" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+             <div style={{ display: 'flex', alignItems: 'center' }}><Database style={{...iconStyle, fontSize: '18px'}} /><span>Data Calculator</span></div>
+             <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
+         </Link>
       </div>
 
-       {/* Compressors Dropdown (Placeholder) */}
-      <div style={categoryTitleStyle} onClick={() => setCompressorsOpen(!compressorsOpen)}>
-         <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-              <span>Compressors</span>
-              {compressorsOpen ? <ChevronDown /> : <ChevronRight />}
+      {/* Other Dropdowns (Compressors, Formatters, API Tools) */}
+      {/* Compressors Dropdown (Placeholder) */}
+        <div style={categoryTitleStyle} onClick={() => setCompressorsOpen(!compressorsOpen)}>
+            <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                <span>Compressors</span>
+                {compressorsOpen ? <ChevronDown /> : <ChevronRight />}
+            </div>
+        </div>
+        {/* Formatters Dropdown (Placeholder) */}
+        <div style={categoryTitleStyle} onClick={() => setFormattersOpen(!formattersOpen)}>
+            <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                <span>Formatters</span>
+                {formattersOpen ? <ChevronDown /> : <ChevronRight />}
+            </div>
+        </div>
+        {/* API Tools Dropdown (Placeholder) */}
+        <div style={categoryTitleStyle} onClick={() => setApiToolsOpen(!apiToolsOpen)}>
+            <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                <span>API Tools</span>
+                {apiToolsOpen ? <ChevronDown /> : <ChevronRight />}
+            </div>
+        </div>
+
+
+      {/* --- User Profile / Sign In Section --- */}
+      <div style={userProfileSectionStyle}>
+        {user ? (
+          // Logged In State
+          <div style={userProfileContentStyle}>
+            <Link
+              href="/profile"
+              style={userLinkStyle}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = userHoverStyle.backgroundColor || 'transparent';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              <span style={userNameStyle}>
+                {user.user_metadata?.display_name || user.email}
+              </span>
+            </Link>
+            <LogoutButton />
           </div>
-      </div>
-       {/* Add content when open */}
-
-       {/* Formatters Dropdown (Placeholder) */}
-       <div style={categoryTitleStyle} onClick={() => setFormattersOpen(!formattersOpen)}>
-           <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-              <span>Formatters</span>
-              {formattersOpen ? <ChevronDown /> : <ChevronRight />}
-           </div>
-       </div>
-        {/* Add content when open */}
-
-       {/* API Tools Dropdown (Placeholder) */}
-      <div style={categoryTitleStyle} onClick={() => setApiToolsOpen(!apiToolsOpen)}>
-          <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-              <span>API Tools</span>
-              {apiToolsOpen ? <ChevronDown /> : <ChevronRight />}
-          </div>
-      </div>
-       {/* Add content when open */}
-
-      {/* User Profile / Sign In Section */}
-      <div style={userProfileStyle}>
-        {isLoggedIn ? (
-          <>
-            <span>{userName}</span>
-            <img src={userAvatarUrl} alt="User Avatar" style={avatarStyle}/>
-          </>
         ) : (
-          <div 
-            style={signInButtonStyle} 
-            onMouseEnter={handleMouseEnter} 
+          // Logged Out State
+          <Link
+            href="/auth"
+            style={signInButtonStyle}
+            onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onClick={() => alert('Sign in clicked!')} // Placeholder action
           >
             <LogIn style={{...iconStyle, marginRight: '8px'}} /> Sign In
-          </div>
+          </Link>
         )}
       </div>
     </div>

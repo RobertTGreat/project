@@ -1,9 +1,13 @@
-'use client';
-
 import Sidebar from '@/components/sidebar';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { createClient } from '@/lib/supabase/server';
+import { ThemeProvider } from "next-themes";
+
+export const metadata: Metadata = {
+  title: "DEVTOOLS",
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,13 +19,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={{
@@ -31,10 +38,26 @@ export default function RootLayout({
           backgroundImage: 'url(/noise.png), radial-gradient(circle, #660000, #212121)',
         }}
       >
-        <Sidebar />
-        <main style={{ flexGrow: 1, overflowY: 'auto', backgroundColor: 'transparent' }}>
-          {children}
-        </main>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Sidebar user={user} />
+          <main 
+            style={{
+              flexGrow: 1, 
+              overflowY: 'auto', 
+              backgroundColor: 'rgba(30, 30, 30, 0.25)', // Same as sidebar example
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)', // For Safari
+              paddingTop: '1px', // Small padding to prevent content overlap with potential blurred edge
+            }}
+          >
+            {children}
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );
