@@ -7,9 +7,9 @@ import { Clock } from 'lucide-react'; // For placeholder tool card icons
 // Placeholder Tool Card Component
 const ToolCard: React.FC<{ title: string; description: string; lastUsed?: string }> = ({ title, description, lastUsed }) => {
   const cardStyle: React.CSSProperties = {
-    backgroundColor: 'rgba(42, 42, 42, 0.6)', // Semi-transparent background
-    backdropFilter: 'blur(10px)',
-    WebkitBackdropFilter: 'blur(10px)', // For Safari support
+    backgroundColor: 'rgba(30, 30, 30, 0.25)', // More transparent background to match sidebar
+    backdropFilter: 'blur(20px)', // Increased blur to match sidebar
+    WebkitBackdropFilter: 'blur(20px)', // For Safari support
     padding: '20px',
     borderRadius: '15px', // Slightly larger radius for glass effect
     border: '1px solid rgba(255, 255, 255, 0.1)', // Subtle white border
@@ -57,7 +57,7 @@ export default function Home() {
 
   const mainContentWrapperStyle: React.CSSProperties = {
     display: 'flex', // Re-apply flex here for content + news panel
-    height: '100%', 
+    height: '100%',
   };
 
   const mainContentStyle: React.CSSProperties = {
@@ -98,19 +98,19 @@ export default function Home() {
           {/* Favourites Section */}
           <h2 style={sectionTitleStyle}>Favourites</h2>
           <div style={toolGridStyle}>
-             <ToolCard 
-                  title="Time Calculator" 
-                  description="Calculate time differences, add or subtract time intervals, and convert between time formats." 
+             <ToolCard
+                  title="Time Calculator"
+                  description="Calculate time differences, add or subtract time intervals, and convert between time formats."
                   lastUsed="2 hours ago"
               />
-             <ToolCard 
-                  title="Time Calculator" 
-                  description="Calculate time differences, add or subtract time intervals, and convert between time formats." 
+             <ToolCard
+                  title="Time Calculator"
+                  description="Calculate time differences, add or subtract time intervals, and convert between time formats."
                   lastUsed="2 hours ago"
               />
-             <ToolCard 
-                  title="Time Calculator" 
-                  description="Calculate time differences, add or subtract time intervals, and convert between time formats." 
+             <ToolCard
+                  title="Time Calculator"
+                  description="Calculate time differences, add or subtract time intervals, and convert between time formats."
                   lastUsed="2 hours ago"
               />
           </div>

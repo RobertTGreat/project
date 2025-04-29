@@ -199,20 +199,20 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           </div>
       </div>
       <div style={{ ...dropdownContentStyle, maxHeight: calculatorsOpen ? '500px' : '0' }}>
-        {/* Assuming these calculator pages exist */}
-        <Link href="/calculators/unit-converter" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-           <div style={{ display: 'flex', alignItems: 'center' }}><RefreshCw style={{...iconStyle, fontSize: '18px'}} /><span>Unit Convertor</span></div>
+        {/* Tools with correct paths */}
+        <Link href="/tools/unit-converter" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+           <div style={{ display: 'flex', alignItems: 'center' }}><RefreshCw style={{...iconStyle, fontSize: '18px'}} /><span>Unit Converter</span></div>
            <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
          </Link>
-         <Link href="/calculators/color-converter" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-             <div style={{ display: 'flex', alignItems: 'center' }}><Palette style={{...iconStyle, fontSize: '18px'}} /><span>Colour Convertor</span></div>
+         <Link href="/tools/color-converter" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+             <div style={{ display: 'flex', alignItems: 'center' }}><Palette style={{...iconStyle, fontSize: '18px'}} /><span>Color Converter</span></div>
              <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
          </Link>
-         <Link href="/calculators/time-calculator" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+         <Link href="/tools/time-calculator" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
              <div style={{ display: 'flex', alignItems: 'center' }}><Clock style={{...iconStyle, fontSize: '18px'}} /><span>Time Calculator</span></div>
              <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
          </Link>
-         <Link href="/calculators/data-calculator" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+         <Link href="/tools/data-calculator" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
              <div style={{ display: 'flex', alignItems: 'center' }}><Database style={{...iconStyle, fontSize: '18px'}} /><span>Data Calculator</span></div>
              <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
          </Link>

@@ -130,7 +130,7 @@ export default function UnitConverterPage() {
   const [toUnit, setToUnit] = useState<string>('');     // Initialize empty
   const [inputValue, setInputValue] = useState<string>('1');
   const [outputValue, setOutputValue] = useState<string>('');
-  
+
   // Memoize available units to prevent recalculation on every render
   const availableUnits = React.useMemo(() => {
       if (!unitType || !conversionFactors[unitType]) return [];
@@ -160,7 +160,7 @@ export default function UnitConverterPage() {
 
     let result: number;
 
-    // --- Special Handling Cases --- 
+    // --- Special Handling Cases ---
     if (unitType === 'temperature') {
       if (fromUnit === toUnit) result = inputNum;
       else if (fromUnit === 'celsius' && toUnit === 'fahrenheit') result = (inputNum * 9/5) + 32;
@@ -173,8 +173,8 @@ export default function UnitConverterPage() {
     }
     // Add other special cases here if needed (e.g., logarithmic scales)
     // else if (unitType === 'some_other_special_type') { ... }
-    
-    // --- Standard Conversion Logic --- 
+
+    // --- Standard Conversion Logic ---
     else {
         // Ensure the units exist in the factors object to prevent errors
         const fromFactor = conversionFactors[unitType]?.[fromUnit];
@@ -184,7 +184,7 @@ export default function UnitConverterPage() {
             setOutputValue('Error: Invalid unit');
             return;
         }
-        
+
         // Convert input value to the base unit for this type
         const baseValue = inputNum / fromFactor;
         // Convert base unit value to the target unit
@@ -196,7 +196,7 @@ export default function UnitConverterPage() {
         setOutputValue('Invalid conversion');
     } else {
         // Use toLocaleString for better number formatting, limit decimals
-        setOutputValue(result.toLocaleString(undefined, { 
+        setOutputValue(result.toLocaleString(undefined, {
             minimumFractionDigits: 0,
             maximumFractionDigits: 8 // Increased precision for some conversions
         }));
@@ -209,21 +209,119 @@ export default function UnitConverterPage() {
     return name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 
+  {/* Main container with flexbox for full height */}
   return (
-    <div className="p-4 sm:p-6 lg:p-8 flex flex-col h-full"> {/* Use Flexbox to fill height */} 
-      <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6 flex-shrink-0"> {/* Prevent header shrinking */} 
+    <div className="p-4 sm:p-6 lg:p-8 flex flex-col h-full">
+      {/* Header with prevention of shrinking */}
+      <h1 className="text-2xl font-semibold text-white mb-6 flex-shrink-0">
         Unit Converter
       </h1>
-      {/* Make card grow to fill available space */}
-      <Card className="w-full max-w-lg mx-auto flex-grow flex flex-col"> 
-        <CardHeader className="flex-shrink-0"> {/* Prevent header shrinking */} 
-          <CardTitle className="text-center">Convert Units</CardTitle>
-        </CardHeader>
-        {/* Allow content to scroll if needed, but prioritize growing */}
-        <CardContent className="space-y-4 flex-grow overflow-y-auto p-4 md:p-6"> 
+      {/* Main content with sidebar layout */}
+      <div className="flex flex-col md:flex-row gap-4 h-full">
+        {/* Quick access sidebar */}
+        <div className="md:w-64 flex-shrink-0">
+          <Card className="border-white/10 h-full">
+            <CardHeader className="flex-shrink-0">
+              <CardTitle className="text-white text-lg">Quick Access</CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 space-y-2">
+              {unitTypes.map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setUnitType(type)}
+                  className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                    unitType === type
+                      ? 'bg-white/20 text-white'
+                      : 'hover:bg-white/10 text-white/70'
+                  }`}
+                >
+                  {formatUnitName(type)}
+                </button>
+              ))}
+
+              {/* Common conversion pairs */}
+              {unitType && (
+                <div className="pt-4 mt-4 border-t border-white/10">
+                  <h3 className="text-xs font-medium text-white/70 mb-3">Common Pairs</h3>
+                  <div className="space-y-2">
+                    {unitType === 'length' && (
+                      <>
+                        <button onClick={() => { setFromUnit('meters'); setToUnit('feet'); }}
+                          className="w-full text-left px-3 py-1.5 rounded-md text-xs bg-white/5 hover:bg-white/10 text-white/70">
+                          Meters → Feet
+                        </button>
+                        <button onClick={() => { setFromUnit('kilometers'); setToUnit('miles'); }}
+                          className="w-full text-left px-3 py-1.5 rounded-md text-xs bg-white/5 hover:bg-white/10 text-white/70">
+                          Kilometers → Miles
+                        </button>
+                      </>
+                    )}
+                    {unitType === 'temperature' && (
+                      <>
+                        <button onClick={() => { setFromUnit('celsius'); setToUnit('fahrenheit'); }}
+                          className="w-full text-left px-3 py-1.5 rounded-md text-xs bg-white/5 hover:bg-white/10 text-white/70">
+                          Celsius → Fahrenheit
+                        </button>
+                        <button onClick={() => { setFromUnit('fahrenheit'); setToUnit('celsius'); }}
+                          className="w-full text-left px-3 py-1.5 rounded-md text-xs bg-white/5 hover:bg-white/10 text-white/70">
+                          Fahrenheit → Celsius
+                        </button>
+                      </>
+                    )}
+                    {unitType === 'mass' && (
+                      <>
+                        <button onClick={() => { setFromUnit('kilograms'); setToUnit('pounds'); }}
+                          className="w-full text-left px-3 py-1.5 rounded-md text-xs bg-white/5 hover:bg-white/10 text-white/70">
+                          Kilograms → Pounds
+                        </button>
+                        <button onClick={() => { setFromUnit('grams'); setToUnit('ounces'); }}
+                          className="w-full text-left px-3 py-1.5 rounded-md text-xs bg-white/5 hover:bg-white/10 text-white/70">
+                          Grams → Ounces
+                        </button>
+                      </>
+                    )}
+                    {unitType === 'data_storage' && (
+                      <>
+                        <button onClick={() => { setFromUnit('gigabytes'); setToUnit('megabytes'); }}
+                          className="w-full text-left px-3 py-1.5 rounded-md text-xs bg-white/5 hover:bg-white/10 text-white/70">
+                          GB → MB
+                        </button>
+                        <button onClick={() => { setFromUnit('megabytes'); setToUnit('kilobytes'); }}
+                          className="w-full text-left px-3 py-1.5 rounded-md text-xs bg-white/5 hover:bg-white/10 text-white/70">
+                          MB → KB
+                        </button>
+                      </>
+                    )}
+                    {unitType === 'time' && (
+                      <>
+                        <button onClick={() => { setFromUnit('hours'); setToUnit('minutes'); }}
+                          className="w-full text-left px-3 py-1.5 rounded-md text-xs bg-white/5 hover:bg-white/10 text-white/70">
+                          Hours → Minutes
+                        </button>
+                        <button onClick={() => { setFromUnit('days'); setToUnit('hours'); }}
+                          className="w-full text-left px-3 py-1.5 rounded-md text-xs bg-white/5 hover:bg-white/10 text-white/70">
+                          Days → Hours
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main converter card - now wider */}
+        <Card className="w-full flex-grow flex flex-col border-white/10">
+          {/* Card header with prevention of shrinking */}
+          <CardHeader className="flex-shrink-0">
+            <CardTitle className="text-center text-white">Convert {formatUnitName(unitType)}</CardTitle>
+          </CardHeader>
+          {/* Allow content to scroll if needed, but prioritize growing */}
+          <CardContent className="space-y-4 flex-grow overflow-y-auto p-4 md:p-6">
           {/* Unit Type Selection */}
           <div>
-            <label htmlFor="unit-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Conversion Type</label>
+            <label htmlFor="unit-type" className="block text-sm font-medium text-white mb-1">Conversion Type</label>
             <Select value={unitType} onValueChange={setUnitType}>
               <SelectTrigger id="unit-type">
                 <SelectValue placeholder="Select type" />
@@ -238,7 +336,7 @@ export default function UnitConverterPage() {
 
           {/* Input Value */}
           <div>
-            <label htmlFor="input-value" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Value</label>
+            <label htmlFor="input-value" className="block text-sm font-medium text-white mb-1">Value</label>
             <Input
               id="input-value"
               type="number" // Stick to number for easier parsing
@@ -251,9 +349,10 @@ export default function UnitConverterPage() {
 
           {/* From/To Unit Selection Row */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-end space-y-2 sm:space-y-0 sm:space-x-2">
-            {/* From Unit */} 
-            <div className="flex-1 min-w-0"> {/* Allow shrinking */} 
-              <label htmlFor="from-unit" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From</label>
+            {/* From Unit */}
+            {/* From unit container with shrinking allowed */}
+            <div className="flex-1 min-w-0">
+              <label htmlFor="from-unit" className="block text-sm font-medium text-white mb-1">From</label>
               <Select value={fromUnit} onValueChange={setFromUnit} disabled={availableUnits.length === 0}>
                 <SelectTrigger id="from-unit">
                   {/* Use a placeholder if fromUnit isn't set yet */}
@@ -267,14 +366,16 @@ export default function UnitConverterPage() {
               </Select>
             </div>
 
-            {/* Equals Sign (Centered) */} 
-            <div className="flex items-center justify-center sm:pt-6"> {/* Add padding top on small screens */} 
-              <span className="text-xl font-semibold text-gray-600 dark:text-gray-400">=</span>
+            {/* Equals Sign (Centered) */}
+            {/* Equals sign with padding on small screens */}
+            <div className="flex items-center justify-center sm:pt-6">
+              <span className="text-xl font-semibold text-white/70">=</span>
             </div>
 
-            {/* To Unit */} 
-            <div className="flex-1 min-w-0"> {/* Allow shrinking */} 
-              <label htmlFor="to-unit" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To</label>
+            {/* To Unit */}
+            {/* To unit container with shrinking allowed */}
+            <div className="flex-1 min-w-0">
+              <label htmlFor="to-unit" className="block text-sm font-medium text-white mb-1">To</label>
               <Select value={toUnit} onValueChange={setToUnit} disabled={availableUnits.length === 0}>
                 <SelectTrigger id="to-unit">
                   <SelectValue placeholder="To Unit" />
@@ -288,9 +389,9 @@ export default function UnitConverterPage() {
             </div>
           </div>
 
-          {/* Output Value */} 
+          {/* Output Value */}
           <div>
-            <label htmlFor="output-value" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Result</label>
+            <label htmlFor="output-value" className="block text-sm font-medium text-white mb-1">Result</label>
             <Input
               id="output-value"
               type="text"
@@ -300,8 +401,66 @@ export default function UnitConverterPage() {
               className="text-lg bg-muted/50 dark:bg-muted/30 border-muted-foreground/30 cursor-not-allowed"
             />
           </div>
+
+          {/* Common Conversions */}
+          {availableUnits.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-sm font-medium text-white mb-3">Common {formatUnitName(unitType)} Conversions</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                {availableUnits.slice(0, 8).map((unit) => (
+                  <button
+                    key={unit}
+                    onClick={() => setToUnit(unit)}
+                    className={`px-3 py-2 text-xs rounded-md transition-colors ${
+                      toUnit === unit
+                        ? 'bg-white/20 text-white'
+                        : 'bg-white/5 hover:bg-white/10 text-white/70'
+                    }`}
+                  >
+                    {formatUnitName(unit)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Quick Conversion Pairs */}
+          <div className="mt-6">
+            <h3 className="text-sm font-medium text-white mb-3">Quick Conversion Pairs</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+              {unitType === 'length' && (
+                <>
+                  <button onClick={() => { setFromUnit('meters'); setToUnit('feet'); }}
+                    className="flex justify-between items-center px-3 py-2 text-xs rounded-md bg-white/5 hover:bg-white/10 text-white/70">
+                    <span>Meters → Feet</span>
+                    <span className="text-white/50">1m ≈ 3.28ft</span>
+                  </button>
+                  <button onClick={() => { setFromUnit('kilometers'); setToUnit('miles'); }}
+                    className="flex justify-between items-center px-3 py-2 text-xs rounded-md bg-white/5 hover:bg-white/10 text-white/70">
+                    <span>Kilometers → Miles</span>
+                    <span className="text-white/50">1km ≈ 0.62mi</span>
+                  </button>
+                </>
+              )}
+              {unitType === 'temperature' && (
+                <>
+                  <button onClick={() => { setFromUnit('celsius'); setToUnit('fahrenheit'); }}
+                    className="flex justify-between items-center px-3 py-2 text-xs rounded-md bg-white/5 hover:bg-white/10 text-white/70">
+                    <span>Celsius → Fahrenheit</span>
+                    <span className="text-white/50">0°C = 32°F</span>
+                  </button>
+                  <button onClick={() => { setFromUnit('celsius'); setToUnit('kelvin'); }}
+                    className="flex justify-between items-center px-3 py-2 text-xs rounded-md bg-white/5 hover:bg-white/10 text-white/70">
+                    <span>Celsius → Kelvin</span>
+                    <span className="text-white/50">0°C = 273.15K</span>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
         </CardContent>
-      </Card>
-    </div>
+          </Card>
+        </div>
+      </div>
   );
-} 
+}
