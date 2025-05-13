@@ -1,6 +1,12 @@
 import { createBrowserClient } from "@supabase/ssr";
-import { hasSupabaseEnvVars } from "./pages-client";
 
+// Check if Supabase environment variables are set
+export const hasSupabaseEnvVars = !!(
+  process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
+// Client-side compatible version for Pages Router
 export function createClient() {
   // If Supabase environment variables are not set, return a mock client
   if (!hasSupabaseEnvVars) {

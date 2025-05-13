@@ -18,10 +18,14 @@ export default async function AuthButton() {
         <div className="flex gap-4 items-center">
           <div>
             <Badge
-              variant={"default"}
-              className="font-normal pointer-events-none"
+              variant={"destructive"}
+              className="font-normal pointer-events-none bg-white/10 text-white border border-white/10 backdrop-blur-md"
+              style={{
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+              }}
             >
-              Please update .env.local file with anon key and url
+              Authentication unavailable - Demo mode active
             </Badge>
           </div>
           <div className="flex gap-2">
@@ -29,8 +33,11 @@ export default async function AuthButton() {
               asChild
               size="sm"
               variant={"outline"}
-              disabled
-              className="opacity-75 cursor-none pointer-events-none"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md"
+              style={{
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+              }}
             >
               <Link href="/sign-in">Sign in</Link>
             </Button>
@@ -38,8 +45,11 @@ export default async function AuthButton() {
               asChild
               size="sm"
               variant={"default"}
-              disabled
-              className="opacity-75 cursor-none pointer-events-none"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md"
+              style={{
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+              }}
             >
               <Link href="/sign-up">Sign up</Link>
             </Button>
@@ -49,20 +59,46 @@ export default async function AuthButton() {
     );
   }
   return user ? (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 text-white">
       Hey, {user.email}!
       <form action={signOutAction}>
-        <Button type="submit" variant={"outline"}>
+        <Button
+          type="submit"
+          variant={"outline"}
+          className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md"
+          style={{
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+          }}
+        >
           Sign out
         </Button>
       </form>
     </div>
   ) : (
     <div className="flex gap-2">
-      <Button asChild size="sm" variant={"outline"}>
+      <Button
+        asChild
+        size="sm"
+        variant={"outline"}
+        className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md"
+        style={{
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+        }}
+      >
         <Link href="/sign-in">Sign in</Link>
       </Button>
-      <Button asChild size="sm" variant={"default"}>
+      <Button
+        asChild
+        size="sm"
+        variant={"default"}
+        className="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md"
+        style={{
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+        }}
+      >
         <Link href="/sign-up">Sign up</Link>
       </Button>
     </div>

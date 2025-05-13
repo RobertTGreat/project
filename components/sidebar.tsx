@@ -17,9 +17,11 @@ import {
   LogOut, // Keep if needed, but LogoutButton handles icon
   UserCircle2, // Import default user icon
   Wrench, // Add an icon for Tools
+  AlertCircle, // For connection warning
 } from 'lucide-react';
 import LogoutButton from './auth/logout-button';
 import { Button } from '@/components/ui/button'; // Keep if styling logout button directly
+import { hasSupabaseEnvVars } from '@/lib/supabase/pages-client';
 
 interface SidebarProps {
   user: User | null;
@@ -112,7 +114,10 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
     ...navItemStyle,
     width: '100%',
     justifyContent: 'center',
-    backgroundColor: '#4a4a4a',
+    backgroundColor: 'rgba(30, 30, 30, 0.25)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
     color: '#ffffff',
     marginBottom: 0,
     textDecoration: 'none',
@@ -244,6 +249,23 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
 
       {/* --- User Profile / Sign In Section --- */}
       <div style={userProfileSectionStyle}>
+        {!hasSupabaseEnvVars && (
+          <div style={{
+            padding: '8px 12px',
+            marginBottom: '10px',
+            backgroundColor: 'rgba(255, 100, 100, 0.1)',
+            borderRadius: '8px',
+            fontSize: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            color: '#ff9999',
+          }}>
+            <AlertCircle size={16} />
+            <span>Supabase connection unavailable</span>
+          </div>
+        )}
+
         {user ? (
           // Logged In State
           <div style={userProfileContentStyle}>
