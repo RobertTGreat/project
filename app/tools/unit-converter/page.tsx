@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Heart } from 'lucide-react';
+import { useFavorites } from '@/lib/contexts/favorites-context';
 
 // Expanded conversion factors
 const conversionFactors: Record<string, Record<string, number>> = {
@@ -123,6 +125,8 @@ const conversionFactors: Record<string, Record<string, number>> = {
 // Function to get sorted unit types
 const getSortedUnitTypes = () => Object.keys(conversionFactors).sort();
 
+const TOOL_ID = 10;
+
 export default function UnitConverterPage() {
   const [unitTypes, setUnitTypes] = useState<string[]>(getSortedUnitTypes());
   const [unitType, setUnitType] = useState<string>(unitTypes[0]);
@@ -130,6 +134,17 @@ export default function UnitConverterPage() {
   const [toUnit, setToUnit] = useState<string>('');     // Initialize empty
   const [inputValue, setInputValue] = useState<string>('1');
   const [outputValue, setOutputValue] = useState<string>('');
+
+  const { addFavorite, removeFavorite, isFavorited } = useFavorites();
+  const isCurrentlyFavorited = isFavorited(TOOL_ID);
+
+  const handleFavoriteClick = () => {
+    if (isCurrentlyFavorited) {
+      removeFavorite(TOOL_ID);
+    } else {
+      addFavorite(TOOL_ID);
+    }
+  };
 
   // Memoize available units to prevent recalculation on every render
   const availableUnits = React.useMemo(() => {
@@ -213,9 +228,18 @@ export default function UnitConverterPage() {
   return (
     <div className="p-4 sm:p-6 lg:p-8 flex flex-col h-full">
       {/* Header with prevention of shrinking */}
-      <h1 className="text-2xl font-semibold text-white mb-6 flex-shrink-0">
-        Unit Converter
-      </h1>
+      <div className="flex items-center mb-6 flex-shrink-0">
+        <h1 className="text-2xl font-semibold text-white mr-3">
+          Unit Converter
+        </h1>
+        <button
+          onClick={handleFavoriteClick}
+          title={isCurrentlyFavorited ? 'Remove from favorites' : 'Add to favorites'}
+          className="p-1 rounded-full hover:bg-white/10 transition-colors"
+        >
+          <Heart size={22} className={isCurrentlyFavorited ? 'text-red-500 fill-red-500' : 'text-gray-400'} />
+        </button>
+      </div>
       {/* Main content with sidebar layout */}
       <div className="flex flex-col md:flex-row gap-4 h-full">
         {/* Quick access sidebar */}

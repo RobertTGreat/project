@@ -1,119 +1,91 @@
 'use client'; // Required if using client-side components like NewsPanel directly
 
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import NewsPanel from '@/components/NewsPanel';
-import { Clock, Heart } from 'lucide-react'; // For placeholder tool card icons
+import ToolCard from '@/components/ToolCard'; // Import shared ToolCard
+// Import specific icons for tools, plus the general ones
+import { 
+  Clock, Heart, RefreshCw, Palette, Database, LucideIcon, 
+  FileImage, Archive, FileCode, Braces, FileDigit, Settings, // For Percentage Calc
+  FileJson, // For JSON Formatter
+  Sigma, // Alternative for Data Calculator or other math
+  Globe, // For HTTP Status Codes / Time Zone
+  KeyRound // For JWT Decoder
+} from 'lucide-react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
 import Link from 'next/link';
+import { createClient } from '@/utils/supabase/client';
 
-// Tool Card Component
-const ToolCard: React.FC<{ 
-  title: string; 
-  description: string; 
-  lastUsed?: string;
-  testId: string;
-  onFavoriteClick: (testId: string) => void;
-  isFavorited: boolean;
-}> = ({ title, description, lastUsed, testId, onFavoriteClick, isFavorited }) => {
-  const cardStyle: React.CSSProperties = {
-    backgroundColor: 'rgba(30, 30, 30, 0.25)', // More transparent background to match sidebar
-    backdropFilter: 'blur(20px)', // Increased blur to match sidebar
-    WebkitBackdropFilter: 'blur(20px)', // For Safari support
-    padding: '20px',
-    borderRadius: '15px', // Slightly larger radius for glass effect
-    border: '1px solid rgba(255, 255, 255, 0.1)', // Subtle white border
-    color: '#e0e0e0',
-    minHeight: '150px', // Give cards some height
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'relative',
-  };
-  const titleStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: '10px',
-  };
-   const descriptionStyle: React.CSSProperties = {
-    fontSize: '14px',
-    color: '#a0a0a0',
-    flexGrow: 1, // Push last used to bottom
-  };
-  const lastUsedStyle: React.CSSProperties = {
-      fontSize: '12px',
-      color: '#888',
-      marginTop: '15px',
-  };
+// Define a mapping from tool ID (number) to Lucide icon components
+const iconMap: { [key: number]: LucideIcon } = {
+  // CALCULATORS - Assuming sequential IDs starting from 10
+  10: RefreshCw,         // Unit Converter
+  11: Palette,           // Color Converter
+  12: Clock,             // Time Calculator
+  13: Database,          // Data Calculator (or Sigma)
+  // COMPRESSORS - Assuming sequential IDs starting from 14
+  14: FileImage,         // Image Compressor
+  15: Archive,           // File Archiver
+  16: FileCode,          // Code Minifier
+  17: Braces,            // JSON Compressor
+  18: FileDigit,         // PDF Compressor (using FileDigit as a placeholder, consider FileText or specific PDF icon)
 
-  const favoriteButtonStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: '15px',
-    right: '15px',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    padding: '5px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: isFavorited ? '#ff4444' : '#a0a0a0',
-    transition: 'color 0.2s ease',
-  };
-
-  return (
-    <div style={cardStyle}>
-      <button
-        style={favoriteButtonStyle}
-        onClick={() => onFavoriteClick(testId)}
-        title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-      >
-        <Heart size={18} fill={isFavorited ? '#ff4444' : 'none'} />
-      </button>
-      <div style={titleStyle}>
-        <Clock size={18} style={{ marginRight: '8px' }} /> {title}
-      </div>
-      <div style={descriptionStyle}>{description}</div>
-      {lastUsed && <div style={lastUsedStyle}>Last used: {lastUsed}</div>}
-    </div>
-  );
 };
 
-// Available tools data
-const availableTools = [
-  {
-    id: 'unit-converter',
-    title: 'Unit Converter',
-    description: 'Convert between different units of measurement including length, weight, temperature, and more.',
-  },
-  {
-    id: 'color-converter',
-    title: 'Color Converter',
-    description: 'Convert colors between different formats like HEX, RGB, HSL, and more.',
-  },
-  {
-    id: 'time-calculator',
-    title: 'Time Calculator',
-    description: 'Calculate time differences, add or subtract time intervals, and convert between time formats.',
-  },
-  {
-    id: 'data-calculator',
-    title: 'Data Calculator',
-    description: 'Convert between different data units like bytes, kilobytes, megabytes, and more.',
-  },
-];
+interface Tool {
+  id: number; // Changed from string to number
+  name: string; 
+  description: string;
+}
 
 export default function Home() {
   const { favorites, addFavorite, removeFavorite, isFavorited } = useFavorites();
+  const [allTools, setAllTools] = useState<Tool[]>([]);
+  const [loadingTools, setLoadingTools] = useState(true);
+  const [toolsError, setToolsError] = useState<string | null>(null);
 
-  const handleFavoriteClick = (testId: string) => {
+  console.log('[Homepage] Initial favorites:', favorites); // Log initial favorites
+
+  useEffect(() => {
+    async function fetchTools() {
+      setLoadingTools(true);
+      setToolsError(null);
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('tools')
+        .select('id, name, description');
+
+      if (error) {
+        console.error('[Homepage] Error fetching tools:', error);
+        setToolsError(error.message || 'Failed to load tools.');
+        setAllTools([]); // Ensure allTools is empty on error
+      } else {
+        console.log('[Homepage] Fetched allTools:', data);
+        setAllTools(data || []);
+      }
+      setLoadingTools(false);
+    }
+    fetchTools();
+  }, []);
+
+  const handleFavoriteClick = (testId: number) => {
     if (isFavorited(testId)) {
       removeFavorite(testId);
     } else {
       addFavorite(testId);
     }
   };
+
+  const getToolDetails = useCallback((toolId: number): Tool | undefined => {
+    const tool = allTools.find(t => t.id === toolId);
+    return tool;
+  }, [allTools]);
+
+  // Log when favorites or allTools change to see their state before rendering
+  useEffect(() => {
+    console.log('[Homepage] Favorites changed (or on mount):', favorites);
+    console.log('[Homepage] allTools changed (or on mount):', allTools);
+  }, [favorites, allTools]);
 
   const pageStyle: React.CSSProperties = {
     height: '100%', // Keep height to fill main area
@@ -173,24 +145,36 @@ export default function Home() {
             <>
               <h2 style={sectionTitleStyle}>Favourites</h2>
               <div style={toolGridStyle}>
-                {favorites.slice(0, 3).map((favorite) => {
-                  const tool = availableTools.find(t => t.id === favorite.test_id);
-                  if (!tool) return null;
-                  
+                {favorites.map((favorite) => {
+                  console.log('[Homepage] Processing favorite:', favorite);
+                  const tool = getToolDetails(favorite.tool_id);
+                  console.log('[Homepage] Matched tool for favorite $favorite.tool_id:', tool);
+                  if (!tool) {
+                    console.warn(`[Homepage] Favorite tool details not found for ID: ${favorite.tool_id}`);
+                    return null;
+                  }
+                  const IconComponent = iconMap[tool.id] || Database;
+
                   return (
                     <Link href={`/tools/${tool.id}`} key={favorite.id} style={{ textDecoration: 'none' }}>
                       <ToolCard
-                        title={tool.title}
+                        name={tool.name}
                         description={tool.description}
                         testId={tool.id}
                         onFavoriteClick={handleFavoriteClick}
                         isFavorited={true}
+                        icon={IconComponent} // Pass the mapped icon component
                       />
                     </Link>
                   );
                 })}
               </div>
-              {favorites.length > 3 && (
+              {/* Conditional "View all favorites" link can remain as is, or be adjusted based on how many are shown vs total */}
+              {/* For now, let's assume if there are more favorites than what might fit on one typical row (e.g. > 4 or 5), show the link */}
+              {/* Or, more simply, if total favorites > number of favorites displayed in the grid before potential truncation by screen size, show it */}
+              {/* Given we removed slice, this condition might need re-evaluation based on desired UX. */}
+              {/* For now, if there are more than, say, 4 favorites, we'll show the link. This is an arbitrary number. */}
+              {favorites.length > 4 && ( 
                 <Link href="/favourites" style={viewAllLinkStyle}>
                   View all favorites →
                 </Link>
@@ -200,19 +184,31 @@ export default function Home() {
 
           {/* All Tools Section */}
           <h2 style={sectionTitleStyle}>All Tools</h2>
-           <div style={toolGridStyle}>
-             {availableTools.map((tool) => (
-               <Link href={`/tools/${tool.id}`} key={tool.id} style={{ textDecoration: 'none' }}>
-                 <ToolCard
-                   title={tool.title}
-                   description={tool.description}
-                   testId={tool.id}
-                   onFavoriteClick={handleFavoriteClick}
-                   isFavorited={isFavorited(tool.id)}
-                 />
-               </Link>
-             ))}
-           </div>
+          {loadingTools && <p style={{textAlign: 'center'}}>Loading tools...</p>}
+          {toolsError && <p style={{ color: 'red', textAlign: 'center' }}>Error loading tools: {toolsError}</p>}
+          {!loadingTools && !toolsError && allTools.length === 0 && (
+            <p style={{textAlign: 'center'}}>No tools available at the moment. Please check back later.</p>
+          )}
+          {!loadingTools && !toolsError && allTools.length > 0 && (
+            <div style={toolGridStyle}>
+              {allTools.map((tool) => {
+                const IconComponent = iconMap[tool.id] || Database; // Get icon from map using tool.id, fallback to Database
+                return (
+                  <Link href={`/tools/${tool.id}`} key={tool.id} style={{ textDecoration: 'none' }}>
+                    <ToolCard
+                      name={tool.name}
+                      description={tool.description}
+                      testId={tool.id}
+                      onFavoriteClick={handleFavoriteClick}
+                      isFavorited={isFavorited(tool.id)}
+                      icon={IconComponent} // Pass the mapped icon component
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+           {/* Add a "View all tools" link if applicable, or remove if this section shows all */}
         </div>
 
         {/* News Panel needs to be inside the flex wrapper */}

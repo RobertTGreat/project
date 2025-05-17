@@ -18,20 +18,47 @@ import {
   UserCircle2, // Import default user icon
   Wrench, // Add an icon for Tools
   AlertCircle, // For connection warning
+  FileImage,  // Added for Image Compressor
+  Archive,    // Added for File Archiver
+  FileCode,   // Added for Code Minifier
+  Braces,     // Added for JSON Compressor
+  FileDigit,  // Added for PDF Compressor
 } from 'lucide-react';
 import LogoutButton from './auth/logout-button';
 import { Button } from '@/components/ui/button'; // Keep if styling logout button directly
 import { hasSupabaseEnvVars } from '@/lib/supabase/pages-client';
+import { useFavorites } from '@/lib/contexts/favorites-context'; // Import useFavorites
 
 interface SidebarProps {
   user: User | null;
 }
+
+// Define tool IDs for the sidebar items
+const sidebarTools: Array<{id: number; name: string; href: string; icon: React.ElementType}> = [
+  // USER WILL NEED TO UPDATE THESE IDs TO NUMBERS FROM DB
+  { id: 10, name: 'Unit Converter', href: '/tools/unit-converter', icon: RefreshCw }, 
+  { id: 11, name: 'Color Converter', href: '/tools/color-converter', icon: Palette },   
+  { id: 12, name: 'Time Calculator', href: '/tools/time-calculator', icon: Clock },    
+  { id: 13, name: 'Data Calculator', href: '/tools/data-calculator', icon: Database }, 
+];
+
+// Define compressor tools
+const sidebarCompressorTools: Array<{id: number; name: string; href: string; icon: React.ElementType}> = [
+  // USER WILL NEED TO UPDATE THESE IDs TO NUMBERS FROM DB
+  { id: 14, name: 'Image Compressor', href: '/tools/image-compressor', icon: FileImage }, 
+  { id: 15, name: 'File Archiver', href: '/tools/file-archiver', icon: Archive },       
+  { id: 16, name: 'Code Minifier', href: '/tools/code-minifier', icon: FileCode },    
+  { id: 17, name: 'JSON Compressor', href: '/tools/json-compressor', icon: Braces },    
+  { id: 18, name: 'PDF Compressor', href: '/tools/pdf-compressor', icon: FileDigit },  
+];
 
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const [calculatorsOpen, setCalculatorsOpen] = useState(true);
   const [compressorsOpen, setCompressorsOpen] = useState(false);
   const [formattersOpen, setFormattersOpen] = useState(false);
   const [apiToolsOpen, setApiToolsOpen] = useState(false);
+
+  const { addFavorite, removeFavorite, isFavorited } = useFavorites(); // Use the hook
 
   // --- Style Definitions ---
   const sidebarStyle: React.CSSProperties = {
@@ -40,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
     WebkitBackdropFilter: 'blur(20px)',
     borderRight: '1px solid rgba(255, 255, 255, 0.1)',
     color: '#e0e0e0',
-    width: '300px',
+    width: '256px',
     height: '100vh',
     display: 'flex',
     flexDirection: 'column',
@@ -176,6 +203,15 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       e.currentTarget.style.backgroundColor = '';
   };
 
+  const handleFavoriteToggle = (e: React.MouseEvent, toolId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isFavorited(toolId)) {
+      removeFavorite(toolId);
+    } else {
+      addFavorite(toolId);
+    }
+  };
 
   // --- Component Return ---
   return (
@@ -187,7 +223,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       <Link href="/" style={navItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <Home style={iconStyle} /> Home
       </Link>
-      {/* Assuming Favourites and News pages exist */}
       <Link href="/favourites" style={navItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <Heart style={iconStyle} /> Favourites
       </Link>
@@ -204,47 +239,83 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           </div>
       </div>
       <div style={{ ...dropdownContentStyle, maxHeight: calculatorsOpen ? '500px' : '0' }}>
-        {/* Tools with correct paths */}
-        <Link href="/tools/unit-converter" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-           <div style={{ display: 'flex', alignItems: 'center' }}><RefreshCw style={{...iconStyle, fontSize: '18px'}} /><span>Unit Converter</span></div>
-           <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
-         </Link>
-         <Link href="/tools/color-converter" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-             <div style={{ display: 'flex', alignItems: 'center' }}><Palette style={{...iconStyle, fontSize: '18px'}} /><span>Color Converter</span></div>
-             <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
-         </Link>
-         <Link href="/tools/time-calculator" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-             <div style={{ display: 'flex', alignItems: 'center' }}><Clock style={{...iconStyle, fontSize: '18px'}} /><span>Time Calculator</span></div>
-             <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
-         </Link>
-         <Link href="/tools/data-calculator" style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-             <div style={{ display: 'flex', alignItems: 'center' }}><Database style={{...iconStyle, fontSize: '18px'}} /><span>Data Calculator</span></div>
-             <Heart style={{ fontSize: '16px', color: '#a0a0a0' }}/>
-         </Link>
+        {sidebarTools.map(tool => {
+          const isToolFavorited = isFavorited(tool.id);
+          const ToolIcon = tool.icon;
+          return (
+            <Link href={tool.href} key={tool.id} style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className="group relative">
+              <div style={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                <ToolIcon style={{...iconStyle, fontSize: '18px'}} />
+                <span>{tool.name}</span>
+              </div>
+              <button 
+                onClick={(e) => handleFavoriteToggle(e, tool.id)}
+                title={isToolFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                className="p-1 rounded-full hover:bg-gray-600/50 transition-colors z-10"
+                style={{
+                  color: isToolFavorited ? '#ff4444' : '#a0a0a0',
+                }}
+              >
+                <Heart
+                  style={{ fontSize: '16px' }}
+                  fill={isToolFavorited ? '#ff4444' : 'none'}
+                />
+              </button>
+            </Link>
+          );
+        })}
       </div>
 
-      {/* Other Dropdowns (Compressors, Formatters, API Tools) */}
       {/* Compressors Dropdown (Placeholder) */}
-        <div style={categoryTitleStyle} onClick={() => setCompressorsOpen(!compressorsOpen)}>
-            <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                <span>Compressors</span>
-                {compressorsOpen ? <ChevronDown /> : <ChevronRight />}
-            </div>
-        </div>
-        {/* Formatters Dropdown (Placeholder) */}
-        <div style={categoryTitleStyle} onClick={() => setFormattersOpen(!formattersOpen)}>
-            <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                <span>Formatters</span>
-                {formattersOpen ? <ChevronDown /> : <ChevronRight />}
-            </div>
-        </div>
-        {/* API Tools Dropdown (Placeholder) */}
-        <div style={categoryTitleStyle} onClick={() => setApiToolsOpen(!apiToolsOpen)}>
-            <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                <span>API Tools</span>
-                {apiToolsOpen ? <ChevronDown /> : <ChevronRight />}
-            </div>
-        </div>
+      <div style={categoryTitleStyle} onClick={() => setCompressorsOpen(!compressorsOpen)}>
+          <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+              <span>Compressors</span>
+              {compressorsOpen ? <ChevronDown /> : <ChevronRight />}
+          </div>
+      </div>
+      <div style={{ ...dropdownContentStyle, maxHeight: compressorsOpen ? '500px' : '0' }}>
+        {sidebarCompressorTools.map(tool => {
+          const isToolFavorited = isFavorited(tool.id);
+          const ToolIcon = tool.icon;
+          return (
+            <Link href={tool.href} key={tool.id} style={subItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className="group relative">
+              <div style={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                <ToolIcon style={{...iconStyle, fontSize: '18px'}} />
+                <span>{tool.name}</span>
+              </div>
+              <button
+                onClick={(e) => handleFavoriteToggle(e, tool.id)}
+                title={isToolFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                className="p-1 rounded-full hover:bg-gray-600/50 transition-colors z-10"
+                style={{
+                  color: isToolFavorited ? '#ff4444' : '#a0a0a0',
+                }}
+              >
+                <Heart
+                  style={{ fontSize: '16px' }}
+                  fill={isToolFavorited ? '#ff4444' : 'none'}
+                />
+              </button>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Other Dropdowns (Formatters, API Tools) */}
+      {/* Formatters Dropdown (Placeholder) */}
+      <div style={categoryTitleStyle} onClick={() => setFormattersOpen(!formattersOpen)}>
+          <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+              <span>Formatters</span>
+              {formattersOpen ? <ChevronDown /> : <ChevronRight />}
+          </div>
+      </div>
+      {/* API Tools Dropdown (Placeholder) */}
+      <div style={categoryTitleStyle} onClick={() => setApiToolsOpen(!apiToolsOpen)}>
+          <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+              <span>API Tools</span>
+              {apiToolsOpen ? <ChevronDown /> : <ChevronRight />}
+          </div>
+      </div>
 
 
       {/* --- User Profile / Sign In Section --- */}

@@ -7,9 +7,9 @@ import { Favorite, favoritesService } from '@/lib/services/favorites';
 interface FavoritesContextType {
   favorites: Favorite[];
   isLoading: boolean;
-  addFavorite: (testId: string) => Promise<void>;
-  removeFavorite: (testId: string) => Promise<void>;
-  isFavorited: (testId: string) => boolean;
+  addFavorite: (toolId: number) => Promise<void>;
+  removeFavorite: (toolId: number) => Promise<void>;
+  isFavorited: (toolId: number) => boolean;
   refreshFavorites: () => Promise<void>;
 }
 
@@ -47,11 +47,11 @@ export function FavoritesProvider({
     refreshFavorites();
   }, [user]);
 
-  const addFavorite = async (testId: string) => {
+  const addFavorite = async (toolId: number) => {
     if (!user) return;
 
     try {
-      const newFavorite = await favoritesService.addFavorite(user.id, testId);
+      const newFavorite = await favoritesService.addFavorite(user.id, toolId);
       if (newFavorite) {
         setFavorites(prev => [newFavorite, ...prev]);
       }
@@ -60,21 +60,21 @@ export function FavoritesProvider({
     }
   };
 
-  const removeFavorite = async (testId: string) => {
+  const removeFavorite = async (toolId: number) => {
     if (!user) return;
 
     try {
-      const success = await favoritesService.removeFavorite(user.id, testId);
+      const success = await favoritesService.removeFavorite(user.id, toolId);
       if (success) {
-        setFavorites(prev => prev.filter(fav => fav.test_id !== testId));
+        setFavorites(prev => prev.filter(fav => fav.tool_id !== toolId));
       }
     } catch (error) {
       console.error('Error removing favorite:', error);
     }
   };
 
-  const isFavorited = (testId: string) => {
-    return favorites.some(fav => fav.test_id === testId);
+  const isFavorited = (toolId: number) => {
+    return favorites.some(fav => fav.tool_id === toolId);
   };
 
   return (
