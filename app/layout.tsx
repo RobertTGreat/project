@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { createClient } from '@/lib/supabase/server';
 import { ThemeProvider } from "next-themes";
+import { FavoritesProvider } from '@/lib/contexts/favorites-context';
 
 export const metadata: Metadata = {
   title: "DEVTOOLS",
@@ -44,19 +45,21 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Sidebar user={user} />
-          <main 
-            style={{
-              flexGrow: 1, 
-              overflowY: 'auto', 
-              backgroundColor: 'rgba(30, 30, 30, 0.25)', // Same as sidebar example
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)', // For Safari
-              paddingTop: '1px', // Small padding to prevent content overlap with potential blurred edge
-            }}
-          >
-            {children}
-          </main>
+          <FavoritesProvider user={user}>
+            <Sidebar user={user} />
+            <main 
+              style={{
+                flexGrow: 1, 
+                overflowY: 'auto', 
+                backgroundColor: 'rgba(30, 30, 30, 0.25)', // Same as sidebar example
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)', // For Safari
+                paddingTop: '1px', // Small padding to prevent content overlap with potential blurred edge
+              }}
+            >
+              {children}
+            </main>
+          </FavoritesProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -2,10 +2,19 @@
 
 import React from 'react';
 import NewsPanel from '@/components/NewsPanel';
-import { Clock } from 'lucide-react'; // For placeholder tool card icons
+import { Clock, Heart } from 'lucide-react'; // For placeholder tool card icons
+import { useFavorites } from '@/lib/contexts/favorites-context';
+import Link from 'next/link';
 
-// Placeholder Tool Card Component
-const ToolCard: React.FC<{ title: string; description: string; lastUsed?: string }> = ({ title, description, lastUsed }) => {
+// Tool Card Component
+const ToolCard: React.FC<{ 
+  title: string; 
+  description: string; 
+  lastUsed?: string;
+  testId: string;
+  onFavoriteClick: (testId: string) => void;
+  isFavorited: boolean;
+}> = ({ title, description, lastUsed, testId, onFavoriteClick, isFavorited }) => {
   const cardStyle: React.CSSProperties = {
     backgroundColor: 'rgba(30, 30, 30, 0.25)', // More transparent background to match sidebar
     backdropFilter: 'blur(20px)', // Increased blur to match sidebar
@@ -17,6 +26,7 @@ const ToolCard: React.FC<{ title: string; description: string; lastUsed?: string
     minHeight: '150px', // Give cards some height
     display: 'flex',
     flexDirection: 'column',
+    position: 'relative',
   };
   const titleStyle: React.CSSProperties = {
     display: 'flex',
@@ -37,20 +47,75 @@ const ToolCard: React.FC<{ title: string; description: string; lastUsed?: string
       marginTop: '15px',
   };
 
+  const favoriteButtonStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: '15px',
+    right: '15px',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '5px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: isFavorited ? '#ff4444' : '#a0a0a0',
+    transition: 'color 0.2s ease',
+  };
+
   return (
     <div style={cardStyle}>
-        <div style={titleStyle}>
-           <Clock size={18} style={{ marginRight: '8px' }} /> {title}
-        </div>
+      <button
+        style={favoriteButtonStyle}
+        onClick={() => onFavoriteClick(testId)}
+        title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+      >
+        <Heart size={18} fill={isFavorited ? '#ff4444' : 'none'} />
+      </button>
+      <div style={titleStyle}>
+        <Clock size={18} style={{ marginRight: '8px' }} /> {title}
+      </div>
       <div style={descriptionStyle}>{description}</div>
       {lastUsed && <div style={lastUsedStyle}>Last used: {lastUsed}</div>}
     </div>
   );
 };
 
+// Available tools data
+const availableTools = [
+  {
+    id: 'unit-converter',
+    title: 'Unit Converter',
+    description: 'Convert between different units of measurement including length, weight, temperature, and more.',
+  },
+  {
+    id: 'color-converter',
+    title: 'Color Converter',
+    description: 'Convert colors between different formats like HEX, RGB, HSL, and more.',
+  },
+  {
+    id: 'time-calculator',
+    title: 'Time Calculator',
+    description: 'Calculate time differences, add or subtract time intervals, and convert between time formats.',
+  },
+  {
+    id: 'data-calculator',
+    title: 'Data Calculator',
+    description: 'Convert between different data units like bytes, kilobytes, megabytes, and more.',
+  },
+];
+
 export default function Home() {
+  const { favorites, addFavorite, removeFavorite, isFavorited } = useFavorites();
+
+  const handleFavoriteClick = (testId: string) => {
+    if (isFavorited(testId)) {
+      removeFavorite(testId);
+    } else {
+      addFavorite(testId);
+    }
+  };
+
   const pageStyle: React.CSSProperties = {
-    // Removed display:flex and background styles - they are now handled by layout/body
     height: '100%', // Keep height to fill main area
     color: '#e0e0e0',
   };
@@ -82,6 +147,14 @@ export default function Home() {
        marginBottom: '40px',
    };
 
+  const viewAllLinkStyle: React.CSSProperties = {
+    display: 'inline-block',
+    marginTop: '10px',
+    color: '#a0a0a0',
+    textDecoration: 'none',
+    fontSize: '14px',
+  };
+
   return (
     <div style={pageStyle}>
       <div style={mainContentWrapperStyle}>
@@ -96,35 +169,49 @@ export default function Home() {
           </p>
 
           {/* Favourites Section */}
-          <h2 style={sectionTitleStyle}>Favourites</h2>
-          <div style={toolGridStyle}>
-             <ToolCard
-                  title="Time Calculator"
-                  description="Calculate time differences, add or subtract time intervals, and convert between time formats."
-                  lastUsed="2 hours ago"
-              />
-             <ToolCard
-                  title="Time Calculator"
-                  description="Calculate time differences, add or subtract time intervals, and convert between time formats."
-                  lastUsed="2 hours ago"
-              />
-             <ToolCard
-                  title="Time Calculator"
-                  description="Calculate time differences, add or subtract time intervals, and convert between time formats."
-                  lastUsed="2 hours ago"
-              />
-          </div>
+          {favorites.length > 0 && (
+            <>
+              <h2 style={sectionTitleStyle}>Favourites</h2>
+              <div style={toolGridStyle}>
+                {favorites.slice(0, 3).map((favorite) => {
+                  const tool = availableTools.find(t => t.id === favorite.test_id);
+                  if (!tool) return null;
+                  
+                  return (
+                    <Link href={`/tools/${tool.id}`} key={favorite.id} style={{ textDecoration: 'none' }}>
+                      <ToolCard
+                        title={tool.title}
+                        description={tool.description}
+                        testId={tool.id}
+                        onFavoriteClick={handleFavoriteClick}
+                        isFavorited={true}
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
+              {favorites.length > 3 && (
+                <Link href="/favourites" style={viewAllLinkStyle}>
+                  View all favorites →
+                </Link>
+              )}
+            </>
+          )}
 
           {/* All Tools Section */}
           <h2 style={sectionTitleStyle}>All Tools</h2>
            <div style={toolGridStyle}>
-             {/* Add more ToolCard instances here */}
-             <ToolCard title="Time Calculator" description="Calculate time differences..." />
-             <ToolCard title="Time Calculator" description="Calculate time differences..." />
-             <ToolCard title="Time Calculator" description="Calculate time differences..." />
-             <ToolCard title="Time Calculator" description="Calculate time differences..." />
-             <ToolCard title="Time Calculator" description="Calculate time differences..." />
-             <ToolCard title="Time Calculator" description="Calculate time differences..." />
+             {availableTools.map((tool) => (
+               <Link href={`/tools/${tool.id}`} key={tool.id} style={{ textDecoration: 'none' }}>
+                 <ToolCard
+                   title={tool.title}
+                   description={tool.description}
+                   testId={tool.id}
+                   onFavoriteClick={handleFavoriteClick}
+                   isFavorited={isFavorited(tool.id)}
+                 />
+               </Link>
+             ))}
            </div>
         </div>
 
