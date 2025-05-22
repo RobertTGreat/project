@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button"; // Added Button for potential use
+import { Button } from "@/components/ui/button";
 import { Heart } from 'lucide-react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
 
@@ -103,9 +103,6 @@ const quickConversions = [
   { from: 'rgb', to: 'hsl', label: 'RGB → HSL' },
   { from: 'hsl', to: 'rgb', label: 'HSL → RGB' },
   { from: 'hex', to: 'hsl', label: 'HEX → HSL' },
-  // Maybe add pairs involving RGBA/HSLA if desired
-  // { from: 'hex', to: 'rgba', label: 'HEX → RGBA (alpha=1)' },
-  // { from: 'rgb', to: 'hsla', label: 'RGB → HSLA (alpha=1)' },
 ];
 
 const HISTORY_STORAGE_KEY = 'colorConverterHistory';
@@ -153,7 +150,6 @@ export default function ColorConverterPage() {
       }
     } catch (error) {
       console.error("Failed to load color conversion history:", error);
-      // Optionally clear corrupted history: localStorage.removeItem(HISTORY_STORAGE_KEY);
     }
   }, []);
 
@@ -164,6 +160,7 @@ export default function ColorConverterPage() {
         id: Date.now().toString(36) + Math.random().toString(36).substring(2),
         timestamp: Date.now(),
       };
+
       // Prevent duplicate of the very last entry if inputs haven't changed
       if (prevHistory.length > 0) {
         const lastEntry = prevHistory[0];
@@ -173,7 +170,7 @@ export default function ColorConverterPage() {
           lastEntry.fromFormat === newHistoryItem.fromFormat &&
           lastEntry.toFormat === newHistoryItem.toFormat
         ) {
-          return prevHistory; // Don't add identical consecutive entry
+          return prevHistory;
         }
       }
       const updatedHistory = [newHistoryItem, ...prevHistory].slice(0, MAX_HISTORY_ITEMS);
@@ -199,7 +196,6 @@ export default function ColorConverterPage() {
     setInputValue(item.inputValue);
     setFromFormat(item.fromFormat);
     setToFormat(item.toFormat);
-    // Output and preview will update via the main useEffect for conversion
   };
 
   // Main conversion logic (updates UI immediately)
@@ -254,11 +250,10 @@ export default function ColorConverterPage() {
     }
     
     setOutputValue(outputStr);
-    // Set color preview based on output string if it's likely a valid color, else use input or transparent
+    // set color preview based on output string if it's valid color
     if (outputStr && !outputStr.toLowerCase().includes('invalid')) {
         setColorPreview(outputStr); 
     } else if (inputValid && (fromFormat === 'hex' || fromFormat === 'rgb' || fromFormat === 'rgba' || fromFormat === 'hsl' || fromFormat === 'hsla')) {
-        // If output is invalid but input was parseable, try to preview input (might need more robust logic)
         setColorPreview(inputValue); 
     } else {
         setColorPreview('transparent');
@@ -266,10 +261,9 @@ export default function ColorConverterPage() {
 
   }, [inputValue, fromFormat, toFormat]);
 
-  // Debounced effect for adding to history
   useEffect(() => {
     if (!inputValue || !outputValue || outputValue.toLowerCase().includes('invalid')) {
-      return; // Don't save if input is empty, output is empty or shows an error
+      return;
     }
 
     const handler = setTimeout(() => {
@@ -284,7 +278,7 @@ export default function ColorConverterPage() {
     return () => {
       clearTimeout(handler);
     };
-  }, [inputValue, outputValue, fromFormat, toFormat]); // Note: addConversionToHistory is not in deps array as it's stable due to setConversionHistory
+  }, [inputValue, outputValue, fromFormat, toFormat]); 
 
   const colorFormats = [
     { id: 'hex', name: 'HEX' },
@@ -292,13 +286,7 @@ export default function ColorConverterPage() {
     { id: 'rgba', name: 'RGBA' },
     { id: 'hsl', name: 'HSL' },
     { id: 'hsla', name: 'HSLA' },
-    // { id: 'cmyk', name: 'CMYK' }, // CMYK is more complex
-    // { id: 'name', name: 'CSS Name' }, // CSS Name to HEX/RGB
   ];
-  
-  // Helper to format names (e.g. "HEX" to "HEX")
-  const formatName = (name: string): string => name.toUpperCase();
-
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 flex flex-col h-full">
@@ -433,9 +421,6 @@ export default function ColorConverterPage() {
                 ></div>
               </div>
             </div>
-            
-            {/* Placeholder for error messages or additional info */}
-            {/* <p className="text-sm text-red-400">Error message here</p> */}
 
           </CardContent>
           

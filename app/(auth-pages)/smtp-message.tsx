@@ -1,6 +1,7 @@
 import { ArrowUpRight, InfoIcon } from "lucide-react";
 import Link from "next/link";
 
+//SMTP message
 export function SmtpMessage() {
   return (
     <div className="bg-white/5 px-5 py-3 border border-white/10 rounded-md flex gap-4 backdrop-blur-md mt-4">

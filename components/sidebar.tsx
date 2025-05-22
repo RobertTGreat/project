@@ -4,28 +4,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { User } from '@supabase/supabase-js';
 import {
-  Home,
-  Heart,
-  FileText,
-  ChevronDown,
-  ChevronRight,
-  RefreshCw,
-  Palette,
-  Clock,
-  Database,
-  LogIn,
-  LogOut, // Keep if needed, but LogoutButton handles icon
-  UserCircle2, // Import default user icon
-  Wrench, // Add an icon for Tools
-  AlertCircle, // For connection warning
-  FileImage,  // Added for Image Compressor
-  Archive,    // Added for File Archiver
-  FileCode,   // Added for Code Minifier
-  Braces,     // Added for JSON Compressor
-  FileDigit,  // Added for PDF Compressor
+  Home,Heart,FileText,ChevronDown,ChevronRight,RefreshCw,
+  Palette,Clock,Database,LogIn,AlertCircle,FileImage,  
+  Archive,FileCode,Braces,FileDigit,  
 } from 'lucide-react';
 import LogoutButton from './auth/logout-button';
-import { Button } from '@/components/ui/button'; // Keep if styling logout button directly
 import { hasSupabaseEnvVars } from '@/lib/supabase/pages-client';
 import { useFavorites } from '@/lib/contexts/favorites-context'; // Import useFavorites
 
@@ -35,7 +18,6 @@ interface SidebarProps {
 
 // Define tool IDs for the sidebar items
 const sidebarTools: Array<{id: number; name: string; href: string; icon: React.ElementType}> = [
-  // USER WILL NEED TO UPDATE THESE IDs TO NUMBERS FROM DB
   { id: 10, name: 'Unit Converter', href: '/tools/unit-converter', icon: RefreshCw }, 
   { id: 11, name: 'Color Converter', href: '/tools/color-converter', icon: Palette },   
   { id: 12, name: 'Time Calculator', href: '/tools/time-calculator', icon: Clock },    
@@ -44,7 +26,6 @@ const sidebarTools: Array<{id: number; name: string; href: string; icon: React.E
 
 // Define compressor tools
 const sidebarCompressorTools: Array<{id: number; name: string; href: string; icon: React.ElementType}> = [
-  // USER WILL NEED TO UPDATE THESE IDs TO NUMBERS FROM DB
   { id: 14, name: 'Image Compressor', href: '/tools/image-compressor', icon: FileImage }, 
   { id: 15, name: 'File Archiver', href: '/tools/file-archiver', icon: Archive },       
   { id: 16, name: 'Code Minifier', href: '/tools/code-minifier', icon: FileCode },    
@@ -136,7 +117,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
     paddingBottom: '8px',
   };
 
-  // Style for the Sign In button when user is logged out
   const signInButtonStyle: React.CSSProperties = {
     ...navItemStyle,
     width: '100%',
@@ -150,7 +130,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
     textDecoration: 'none',
   };
 
-  // Styles for the User Profile Section at the bottom when logged in
   const userProfileSectionStyle: React.CSSProperties = {
     marginTop: 'auto',
     paddingTop: '15px',
@@ -163,7 +142,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const userProfileContentStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px', // Space between avatar, name, and button
+    gap: '10px', 
   };
 
   const userLinkStyle: React.CSSProperties = {
@@ -172,7 +151,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
     gap: '10px',
     flexGrow: 1,
     textDecoration: 'none',
-    minWidth: 0, // Prevent text overflow issues
+    minWidth: 0, 
     color: 'inherit',
     padding: '8px 12px',
     borderRadius: '6px',
@@ -185,9 +164,9 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   };
 
   const userNameStyle: React.CSSProperties = {
-    flexGrow: 1, // Allow name to take space
+    flexGrow: 1, 
     fontSize: '15px',
-    color: 'inherit', // Inherit color from link
+    color: 'inherit',
     fontWeight: '500',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -195,7 +174,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   };
 
   // --- Hover Handlers ---
-  // Apply hover style to user link area as well
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement | HTMLAnchorElement>) => {
       e.currentTarget.style.backgroundColor = navItemHoverStyle.backgroundColor || '';
   };
@@ -213,10 +191,9 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
     }
   };
 
-  // --- Component Return ---
   return (
     <div style={sidebarStyle}>
-      {/* --- Top Section (Title, Main Links, Dropdowns) --- */}
+
       <div style={titleStyle}>DEVTOOLS</div>
 
       <div style={categoryTitleStyle}>Main</div>
@@ -230,7 +207,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         <FileText style={iconStyle} /> News
       </Link>
 
-      {/* --- Dropdown Sections --- */}
       {/* Calculators Dropdown */}
       <div style={categoryTitleStyle} onClick={() => setCalculatorsOpen(!calculatorsOpen)} >
           <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -301,7 +277,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         })}
       </div>
 
-      {/* Other Dropdowns (Formatters, API Tools) */}
       {/* Formatters Dropdown (Placeholder) */}
       <div style={categoryTitleStyle} onClick={() => setFormattersOpen(!formattersOpen)}>
           <div style={dropdownHeaderStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -318,7 +293,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       </div>
 
 
-      {/* --- User Profile / Sign In Section --- */}
       <div style={userProfileSectionStyle}>
         {!hasSupabaseEnvVars && (
           <div style={{
@@ -338,6 +312,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         )}
 
         {user ? (
+
           // Logged In State
           <div style={userProfileContentStyle}>
             <Link
@@ -357,6 +332,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             <LogoutButton />
           </div>
         ) : (
+          
           // Logged Out State
           <Link
             href="/auth"

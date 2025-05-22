@@ -1,8 +1,9 @@
-'use client'; // Add this because we are using hooks
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { format } from 'date-fns';
-import Link from 'next/link'; // Import Link for navigation
+import Link from 'next/link';
 
 interface NewsArticle {
   id: number;
@@ -10,13 +11,8 @@ interface NewsArticle {
   content: string;
   summary?: string;
   published_date: string;
-  // Add other fields if needed for display, e.g., category
 }
 
-// Placeholder Data - This will be removed
-// const newsItems: NewsItem[] = [
-// ... existing code ...
-// ];
 
 const NewsPanel: React.FC = () => {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
@@ -30,14 +26,14 @@ const NewsPanel: React.FC = () => {
       const supabase = createClient();
       const { data, error: fetchError } = await supabase
         .from('news_articles')
-        .select('id, title, summary, content, published_date') // Select necessary fields
+        .select('id, title, summary, content, published_date') 
         .order('published_date', { ascending: false })
-        .limit(5); // Fetch latest 5 articles for the panel
+        .limit(5); 
 
       if (fetchError) {
         console.error('Error fetching news for panel:', fetchError);
         setError(fetchError.message || 'Failed to load news.');
-        setArticles([]); // Ensure articles is an empty array on error
+        setArticles([]); 
       } else {
         setArticles(data || []);
       }
@@ -47,15 +43,15 @@ const NewsPanel: React.FC = () => {
   }, []);
 
   const panelStyle: React.CSSProperties = {
-    backgroundColor: 'rgba(26, 26, 26, 0.25)', // Increased transparency (lower alpha)
-    backdropFilter: 'blur(20px)', // Increased blur
-    WebkitBackdropFilter: 'blur(20px)', // Increased blur (Safari)
+    backgroundColor: 'rgba(26, 26, 26, 0.25)', 
+    backdropFilter: 'blur(20px)', 
+    WebkitBackdropFilter: 'blur(20px)', 
     color: '#e0e0e0',
     padding: '20px',
-    width: '300px', // Fixed width based on mockup appearance
-    height: '100%', // Take full height of parent
-    overflowY: 'auto', // Scroll if content overflows
-    borderLeft: '1px solid rgba(255, 255, 255, 0.1)', // Subtle border on the left
+    width: '300px', 
+    height: '100%', 
+    overflowY: 'auto', 
+    borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
   };
 
   const titleStyle: React.CSSProperties = {
@@ -75,7 +71,7 @@ const NewsPanel: React.FC = () => {
 
   const dateStyle: React.CSSProperties = {
     fontSize: '12px',
-    color: '#00aaff', // Blue color like mockup
+    color: '#00aaff', 
     marginBottom: '5px',
   };
 
@@ -90,11 +86,11 @@ const NewsPanel: React.FC = () => {
     fontSize: '14px',
     color: '#a0a0a0',
     lineHeight: '1.4',
-    // Add clamping for description to prevent overflow
+
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     display: '-webkit-box',
-    WebkitLineClamp: 3, // Limit to 3 lines
+    WebkitLineClamp: 3, 
     WebkitBoxOrient: 'vertical',
   };
 
@@ -144,7 +140,7 @@ const NewsPanel: React.FC = () => {
                 paddingBottom: index === articles.length - 1 ? '0' : '20px',
                 marginBottom: index === articles.length - 1 ? '0' : '20px',
               }}
-              className="news-item" // Keep class if used elsewhere, but style ensures uniqueness
+              className="news-item"
             >
               <div style={dateStyle}>{format(new Date(article.published_date), 'MMMM dd, yyyy')}</div>
               <div style={itemTitleStyle}>{article.title}</div>
@@ -154,8 +150,7 @@ const NewsPanel: React.FC = () => {
             </div>
           </Link>
         ))}
-        {/* Remove static style for last child if it was there */}
-        {/* {newsItems.length > 0 && <style>{`.news-item:last-child { border-bottom: none; }`}</style>} */}
+
         {articles.length > 0 && (
           <Link href="/news" style={viewAllLinkStyle}>
             View All News →

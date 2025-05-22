@@ -2,16 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
-import { Heart, Braces, Wrench } from 'lucide-react'; // Specific icon for this tool
+import { Heart, Braces, Wrench } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Copy, Check } from 'lucide-react';
 
-const TOOL_ID = 17; // Numeric ID for JSON Compressor
+const TOOL_ID = 17; 
 const TOOL_NAME = 'JSON Compressor';
 const TOOL_DESCRIPTION = 'Compress JSON data, potentially by removing whitespace or using algorithms.';
 
-// Reusable styles
 const pageHeaderStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
@@ -97,7 +96,7 @@ export default function JsonCompressorPage() {
       try {
         await navigator.clipboard.writeText(outputJson);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000); // Reset copied status after 2 seconds
+        setTimeout(() => setCopied(false), 2000); 
       } catch (err) {
         console.error('Failed to copy:', err);
         setError('Failed to copy output to clipboard.');

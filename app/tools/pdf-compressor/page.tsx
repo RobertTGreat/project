@@ -2,13 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
-import { Heart, FileDigit, Wrench } from 'lucide-react'; // Specific icon for this tool
+import { Heart, FileDigit, Wrench } from 'lucide-react'; 
 
-const TOOL_ID = 18; // Numeric ID for PDF Compressor
+const TOOL_ID = 18;
 const TOOL_NAME = 'PDF Compressor';
 const TOOL_DESCRIPTION = 'Reduce the file size of PDF documents.';
 
-// Reusable styles
 const pageHeaderStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',

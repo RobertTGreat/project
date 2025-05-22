@@ -2,13 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
-import { Heart, Archive, Wrench } from 'lucide-react'; // Specific icon for this tool
+import { Heart, Archive, Wrench } from 'lucide-react'; 
 
-const TOOL_ID = 15; // Numeric ID for File Archiver
+const TOOL_ID = 15; 
 const TOOL_NAME = 'File Archiver';
 const TOOL_DESCRIPTION = 'Create and extract archive files (ZIP, TAR, GZ).';
 
-// Reusable styles (consider moving to a shared CSS module or utility if used extensively)
 const pageHeaderStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',

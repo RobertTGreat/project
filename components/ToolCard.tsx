@@ -9,8 +9,7 @@ interface ToolCardProps {
   testId: number;
   onFavoriteClick: (testId: number) => void;
   isFavorited: boolean;
-  icon: React.ElementType; // Expects the resolved IconComponent
-  // lastUsed?: string; // This prop was in homepage but not favourites, can be added if needed universally
+  icon: React.ElementType;
 }
 
 const ToolCard: React.FC<ToolCardProps> = ({ 
@@ -33,11 +32,10 @@ const ToolCard: React.FC<ToolCardProps> = ({
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
-    cursor: 'pointer', // Added to indicate it's clickable (as it's wrapped in Link)
-    transition: 'all 0.2s ease-in-out', // Smooth transition for hover effects
+    cursor: 'pointer', 
+    transition: 'all 0.2s ease-in-out',
   };
 
-  // Add a hover effect style (optional, but good for UX)
   const [isHovered, setIsHovered] = React.useState(false);
   const hoverStyle: React.CSSProperties = isHovered ? {
     transform: 'translateY(-5px)',
@@ -57,11 +55,11 @@ const ToolCard: React.FC<ToolCardProps> = ({
     fontSize: '14px',
     color: '#a0a0a0',
     flexGrow: 1,
-    lineHeight: '1.4', // Ensure consistent line height
-    overflow: 'hidden', // Prevent long descriptions from breaking layout
+    lineHeight: '1.4', 
+    overflow: 'hidden', 
     textOverflow: 'ellipsis',
     display: '-webkit-box',
-    WebkitLineClamp: 3, // Limit description to 3 lines
+    WebkitLineClamp: 3,
     WebkitBoxOrient: 'vertical',
   };
 
@@ -78,7 +76,7 @@ const ToolCard: React.FC<ToolCardProps> = ({
     justifyContent: 'center',
     color: isFavorited ? '#ff4444' : '#a0a0a0',
     transition: 'color 0.2s ease',
-    zIndex: 1, // Ensure button is above other content for clicking
+    zIndex: 1, 
   };
 
   return (
@@ -102,7 +100,6 @@ const ToolCard: React.FC<ToolCardProps> = ({
         {IconComponent && <IconComponent size={18} style={{ marginRight: '8px' }} />} {name}
       </div>
       <div style={descriptionStyle}>{description}</div>
-      {/* If lastUsed is needed, add it here with conditional rendering */}
     </div>
   );
 };

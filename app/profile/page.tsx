@@ -11,7 +11,7 @@ export default async function ProfilePage() {
     redirect("/auth"); // Redirect to login if not authenticated
   }
 
-  // We pass the user object, which includes email and potentially metadata
+  // profile page
   return (
     <div className="p-4 md:p-8">
       <h1 className="text-2xl font-bold mb-6 text-white">Profile Settings</h1>

@@ -8,8 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { NewsArticle } from './page'; // Assuming NewsArticle interface is exported from page.tsx
-import { format } from 'date-fns'; // For formatting date input
+import { NewsArticle } from './page';
+import { format } from 'date-fns'; 
 
 interface ArticleFormProps {
   isOpen: boolean;

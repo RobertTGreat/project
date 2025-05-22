@@ -11,18 +11,19 @@ import ToolCard from '@/components/ToolCard';
 import { createClient } from '@/utils/supabase/client';
 
 // Define a mapping from tool ID (number) to Lucide icon components
-const iconMap: { [key: number]: LucideIcon } = { // Keys are now numbers
-  // CALCULATORS - Assuming sequential IDs starting from 10
+const iconMap: { [key: number]: LucideIcon } = {
+  // CALCULATORS
   10: RefreshCw,         // Unit Converter
   11: Palette,           // Color Converter
   12: Clock,             // Time Calculator
   13: Database,          // Data Calculator (or Sigma)
-  // COMPRESSORS - Assuming sequential IDs starting from 14
+
+  // COMPRESSORS
   14: FileImage,         // Image Compressor
   15: Archive,           // File Archiver
   16: FileCode,          // Code Minifier
   17: Braces,            // JSON Compressor
-  18: FileDigit,         // PDF Compressor (using FileDigit as a placeholder, consider FileText or specific PDF icon)
+  18: FileDigit,         // PDF Compressor
 
 };
 
@@ -30,10 +31,9 @@ interface Tool {
   id: number;
   name: string;
   description: string;
-  // No icon property from DB
 }
 
-// Define an interface for the props of the tools to be displayed
+// interface for the tools to be displayed
 interface ToolToDisplay {
   key: string | number;
   href: string;
@@ -55,9 +55,8 @@ export default function FavouritesPage() {
       setLoadingTools(true);
       setToolsError(null);
       const supabase = createClient();
-      // Fetch only the tools that are in the favorites list to be efficient,
-      // or fetch all and filter. For simplicity, fetching all for now.
-      // If performance becomes an issue with many tools, this can be optimized.
+
+      // fetch tools from the database
       const { data, error } = await supabase
         .from('tools')
         .select('id, name, description'); 
@@ -70,14 +69,14 @@ export default function FavouritesPage() {
       }
       setLoadingTools(false);
     }
-    // Only fetch tools if there are favorites to display details for.
-    // If favorites list is initially empty then becomes populated, this effect will re-run.
+    
+    // fetch tools if there are favorites to display details for
     if (favorites.length > 0) {
       fetchTools();
     } else {
       setLoadingTools(false); // No favorites, so no tool details to load.
     }
-  }, [favorites]); // Dependency: re-fetch/re-evaluate if the favorites list changes.
+  }, [favorites]);
 
   const getToolDetails = useCallback((toolId: number): Tool | undefined => {
     return allTools.find(t => t.id === toolId);
@@ -104,8 +103,8 @@ export default function FavouritesPage() {
           IconComponent,
         };
       })
-      .filter(Boolean) as ToolToDisplay[]; // Assert to the specific type after filtering nulls
-  }, [favorites, allTools, loadingTools, toolsError, getToolDetails]); // Removed iconMap from deps as it's defined outside and stable
+      .filter(Boolean) as ToolToDisplay[]; 
+  }, [favorites, allTools, loadingTools, toolsError, getToolDetails]); 
 
   const handleFavoriteClick = (testId: number) => {
     if (isFavorited(testId)) {

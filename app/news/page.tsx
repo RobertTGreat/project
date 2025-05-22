@@ -1,17 +1,17 @@
-'use client'; // Assuming this might become interactive later with admin features
+'use client'; 
 
-import { createClient } from '@/utils/supabase/client'; // Using client for potential future interactivity
+import { createClient } from '@/utils/supabase/client'; 
 import { useEffect, useState } from 'react';
-import { format } from 'date-fns'; // Will address if installation is still an issue
+import { format } from 'date-fns'; 
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogOverlay, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button'; // For close button in modal
+import { Button } from '@/components/ui/button'; 
 
 interface NewsArticle {
   id: number;
   title: string;
-  content: string; // Full content
-  summary?: string; // Optional summary
+  content: string;
+  summary?: string; 
   published_date: string;
   author?: string;
   category?: string;
@@ -21,10 +21,10 @@ interface NewsArticle {
 }
 
 async function getNewsArticlesClient(): Promise<NewsArticle[]> {
-  const supabase = createClient(); // Using the client-side Supabase client
+  const supabase = createClient(); 
   const { data, error } = await supabase
     .from('news_articles')
-    .select('*') // Select all columns for now
+    .select('*')
     .order('published_date', { ascending: false });
 
   if (error) {
@@ -48,7 +48,7 @@ export default function NewsPage() {
         const supabase = createClient();
         const { data, error: fetchError } = await supabase
           .from('news_articles')
-          .select('*') // Fetch all data for modal display
+          .select('*')
           .order('published_date', { ascending: false });
 
         if (fetchError) {
@@ -72,7 +72,7 @@ export default function NewsPage() {
 
   const handleModalClose = () => {
     setIsArticleModalOpen(false);
-    // Delay clearing selected article to allow for modal close animation
+    
     setTimeout(() => {
       setSelectedArticleForModal(null);
     }, 300); 
@@ -144,7 +144,7 @@ export default function NewsPage() {
                     {!article.summary && article.content && (
                        <div
                           className="text-muted-foreground mb-3 flex-grow prose prose-sm prose-invert max-w-none overflow-hidden"
-                          style={{ maxHeight: '4.5em' }} // Approx 3 lines of text
+                          style={{ maxHeight: '4.5em' }} 
                           dangerouslySetInnerHTML={{ __html: article.content.substring(0, 150) + (article.content.length > 150 ? '...' : '') }}
                         />
                     )}

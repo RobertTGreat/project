@@ -18,7 +18,6 @@ const quickConversions = [
   { from: 'minutes', to: 'hours', label: 'Minutes → Hours' },
   { from: 'hours', to: 'days', label: 'Hours → Days' },
   { from: 'days', to: 'weeks', label: 'Days → Weeks' },
-  // Add more common pairs as needed
 ];
 
 export default function TimeCalculatorPage() {
@@ -53,7 +52,6 @@ export default function TimeCalculatorPage() {
     }
   }, [inputValue, fromUnit, toUnit]);
 
-  // Placeholder for available time units
   const timeUnits = [
     { id: 'nanoseconds', name: 'Nanoseconds (ns)' },
     { id: 'microseconds', name: 'Microseconds (µs)' },

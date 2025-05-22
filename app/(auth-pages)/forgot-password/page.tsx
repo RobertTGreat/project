@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
 
+//Forgot password page
 export default async function ForgotPassword(props: {
   searchParams: Promise<Message>;
 }) {

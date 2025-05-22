@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
-import { Heart, FileCode, Wrench } from 'lucide-react'; // Specific icon for this tool
+import { Heart, FileCode, Wrench } from 'lucide-react';
 
-const TOOL_ID = 16; // Numeric ID for Code Minifier
+const TOOL_ID = 16; 
 const TOOL_NAME = 'Code Minifier';
 const TOOL_DESCRIPTION = 'Minify code (CSS, JS, HTML) to reduce file size.';
 

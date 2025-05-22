@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart } from 'lucide-react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
 
-// Expanded conversion factors
 const conversionFactors: Record<string, Record<string, number>> = {
   length: {
     meters: 1,
@@ -68,10 +67,10 @@ const conversionFactors: Record<string, Record<string, number>> = {
     microseconds: 1e6,
     nanoseconds: 1e9,
   },
-  temperature: { // Special handling needed
-    celsius: 1,
-    fahrenheit: 1, // Placeholder
-    kelvin: 1, // Placeholder
+  temperature: { 
+    celsius: -272.15,
+    fahrenheit: -457.87, 
+    kelvin: 1, 
   },
   data_storage: {
     bytes: 1,
@@ -93,7 +92,7 @@ const conversionFactors: Record<string, Record<string, number>> = {
     megapascals: 1e-6,
     bars: 1e-5,
     millibars: 0.01,
-    psi: 0.000145038, // Pounds per square inch
+    psi: 0.000145038, 
     atmospheres: 9.8692e-6,
     torr: 0.00750062,
   },
@@ -105,7 +104,7 @@ const conversionFactors: Record<string, Record<string, number>> = {
     watt_hours: 0.000277778,
     kilowatt_hours: 2.77778e-7,
     electronvolts: 6.242e+18,
-    btu: 0.000947817, // British Thermal Unit
+    btu: 0.000947817, 
   },
   frequency: {
     hertz: 1,
@@ -116,7 +115,7 @@ const conversionFactors: Record<string, Record<string, number>> = {
   angle: {
     degrees: 1,
     radians: Math.PI / 180,
-    gradians: 100 / 90, // Also known as gon
+    gradians: 100 / 90, 
     arcminutes: 60,
     arcseconds: 3600,
   }
@@ -130,8 +129,8 @@ const TOOL_ID = 10;
 export default function UnitConverterPage() {
   const [unitTypes, setUnitTypes] = useState<string[]>(getSortedUnitTypes());
   const [unitType, setUnitType] = useState<string>(unitTypes[0]);
-  const [fromUnit, setFromUnit] = useState<string>(''); // Initialize empty
-  const [toUnit, setToUnit] = useState<string>('');     // Initialize empty
+  const [fromUnit, setFromUnit] = useState<string>(''); 
+  const [toUnit, setToUnit] = useState<string>('');     
   const [inputValue, setInputValue] = useState<string>('1');
   const [outputValue, setOutputValue] = useState<string>('');
 
@@ -162,7 +161,7 @@ export default function UnitConverterPage() {
         setFromUnit('');
         setToUnit('');
     }
-  }, [availableUnits]); // Depend on availableUnits
+  }, [availableUnits]); 
 
   // Perform conversion when inputs change
   useEffect(() => {
@@ -184,11 +183,8 @@ export default function UnitConverterPage() {
       else if (fromUnit === 'kelvin' && toUnit === 'celsius') result = inputNum - 273.15;
       else if (fromUnit === 'fahrenheit' && toUnit === 'kelvin') result = (inputNum - 32) * 5/9 + 273.15;
       else if (fromUnit === 'kelvin' && toUnit === 'fahrenheit') result = (inputNum - 273.15) * 9/5 + 32;
-      else result = NaN; // Should not happen if units are valid
+      else result = NaN;
     }
-    // Add other special cases here if needed (e.g., logarithmic scales)
-    // else if (unitType === 'some_other_special_type') { ... }
-
     // --- Standard Conversion Logic ---
     else {
         // Ensure the units exist in the factors object to prevent errors
@@ -217,7 +213,7 @@ export default function UnitConverterPage() {
         }));
     }
 
-  }, [inputValue, fromUnit, toUnit, unitType]); // Rerun when any of these change
+  }, [inputValue, fromUnit, toUnit, unitType]);
 
   // Helper function to format unit names (replace underscore with space, capitalize)
   const formatUnitName = (name: string): string => {

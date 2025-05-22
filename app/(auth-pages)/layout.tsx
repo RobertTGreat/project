@@ -1,3 +1,4 @@
+//Auth layout
 export default async function Layout({
   children,
 }: {

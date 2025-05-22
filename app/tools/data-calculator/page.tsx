@@ -43,7 +43,6 @@ export default function DataCalculatorPage() {
     setToUnit(to);
   };
 
-  // Placeholder for data calculation logic
   useEffect(() => {
     // Dummy logic: This should be replaced with actual data unit conversion
     if (inputValue && fromUnit && toUnit) {
@@ -53,7 +52,6 @@ export default function DataCalculatorPage() {
     }
   }, [inputValue, fromUnit, toUnit]);
 
-  // Placeholder for available data units
   const dataUnits = [
     { id: 'bits', name: 'Bits' },
     { id: 'bytes', name: 'Bytes' },

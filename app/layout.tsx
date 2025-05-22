@@ -36,7 +36,7 @@ export default async function RootLayout({
         style={{
           display: 'flex', 
           height: '100vh', 
-          backgroundColor: '#212121', // Fallback background
+          backgroundColor: '#212121',
           backgroundImage: 'url(/noise.png), radial-gradient(circle, #660000, #212121)',
         }}
       >

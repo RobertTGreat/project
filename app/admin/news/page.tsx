@@ -6,14 +6,9 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { ArticleForm } from './article-form';
-// We will add components for forms and modals later
-// import { Input } from '@/components/ui/input';
-// import { Textarea } from '@/components/ui/textarea';
-// import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 interface User {
   id: string;
-  // Add other user properties if needed
 }
 
 interface UserRole {
@@ -139,10 +134,6 @@ export default function AdminNewsPage() {
   const handleDeleteArticle = async (articleId: number) => {
     if (window.confirm('Are you sure you want to delete this article?')) {
       console.log(`Attempting to delete article ${articleId}`);
-      // Later: call server action for deletion and refetch articles
-      // const { error } = await supabase.from('news_articles').delete().match({ id: articleId });
-      // if (error) console.error('Error deleting article', error);
-      // else fetchNewsArticles(); 
     }
   };
 
